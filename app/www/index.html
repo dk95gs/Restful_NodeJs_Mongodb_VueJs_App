@@ -4,6 +4,10 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
     <title>Dilshan API</title>
   </head>
@@ -21,37 +25,57 @@
           <div class="col">
               <input v-model="id" type="text" v-model="title" />
               <button @click="getSingleSong(id)" class="btn btn-success">Find Song By Id</button>
-              <button class="btn btn-danger">Delete Song By Id</button>
           </div>
         </div>
         <hr>
         <div class="row">
           <div class="col">
             <label for="">Id</label>
-            <input type="text">
+            <input v-model="id" type="text">
             <label for="">Title</label>
-            <input type="text">
+            <input v-model="updateTitle" type="text">
             <label for="">Genre</label>
-            <input type="text">
-            <button class="btn btn-warning">Update song</button>
-
+            <input v-model="updateGenre" type="text">
+            <button @click="updateSong(id)" class="btn btn-warning">Update song</button>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <label for="">Title</label>
+            <input v-model="title" type="text">
+            <label for="">Genre</label>
+            <input v-model="genre" type="text">
+            <button @click="addSong()" class="btn btn-warning">Add song</button>
           </div>
         </div>
         <br><br>
         <div class="row">
           <table class="table table-bordered">
             <tr>
+              <th></th>
               <th v-for="item in headers">
                 {{item}}
               </th>
               <th>
+              </th>
+              <th>
+              </th>
             </tr>
             <tr v-for="item in displayItems">
+              <td>
+                <button @click="selectSong(item._id)"> Select Song </td>
+              </td>
               <td>{{item._id}}</td>
               <td>{{item.title}}</td>
               <td>{{item.genre}}</td>
               <td>
                 <button @click="getReviewsForSong(item._id)">See Reviews</button>
+              </td>
+              <td>
+                <button @click="addReview(item._id)"> Add Review </td>
+              </td>
+              <td>
+                <button @click="deleteSong(item._id)"> Delete Song </td>
               </td>
             </tr>
           </table>
@@ -69,7 +93,12 @@
         baseUrl: window.location.href,
         displayItems: [],
         headers: [],
-        id: ''
+        id: '',
+        title: '',
+        genre: '',
+        updateTitle: '',
+        updateGenre: '',
+        reviewBody: ''
       },
       methods: {
         getSongs: function(){
@@ -97,8 +126,81 @@
             this.headers = Object.keys(this.displayItems[0]);
           });
         },
-        deleteSong(){
-          
+        updateSong(song_id){
+          var self = this;
+          var settings = {
+            "async": true,
+            "crossDomain": true,
+            "url": this.baseUrl + "songs/" + song_id,
+            "method": "PUT",
+            "headers": {
+              "Content-Type": "application/x-www-form-urlencoded",
+              "cache-control": "no-cache",
+              "Postman-Token": "def7ab0f-7f76-4d5c-abc9-9b97b12df073"
+            },
+            "data": {
+              "title": this.updateTitle,
+              "genre": this.updateGenre
+            }
+            }
+
+            $.ajax(settings).done(function (response) {
+              self.getSongs();
+            });
+        },
+        addSong(){
+            let self = this;
+            var settings = {
+              "async": true,
+              "crossDomain": true,
+              "url": this.baseUrl + "songs/",
+              "method": "POST",
+              "headers": {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "cache-control": "no-cache",
+                "Postman-Token": "30e88cdc-5edc-4a2b-b98f-bf1f675b57a5"
+              },
+              "data": {
+                "title": this.title,
+                "genre": this.genre
+              }
+            }
+
+          $.ajax(settings).done(function (response) {
+            self.getSongs();
+          });
+
+        },
+        deleteSong(song_id){
+          axios.delete(this.baseUrl + "songs/" + song_id).then( (response) =>{
+            console.log(response);
+            this.getSongs();
+          });
+        },
+        selectSong(id){
+          this.id = id;
+        },
+        addReview(song_id) {
+          this.reviewBody = prompt("Enter your reivew");
+          var settings = {
+          "async": true,
+          "crossDomain": true,
+          "url": "http://localhost:8000/reviews",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "cache-control": "no-cache",
+            "Postman-Token": "cdbb2902-273c-48ee-b6fc-d6b9d25ff35b"
+          },
+          "data": {
+            "songId": song_id,
+            "reviewBody": this.reviewBody
+          }
+        }
+
+        $.ajax(settings).done(function (response) {
+          console.log(response);
+        });
         }
       }
     });
