@@ -18,13 +18,14 @@
           <div class="col">
             <h1>API - Assignment 2</h1>
             <h2>Songs</h2>
-            <button class="btn btn-primary" @click="getSongs()" >Get All Songs</button>
+            <a class="btn btn-primary" href="reviews.html">Go to Reviews Page</a>
+            <button class="btn btn-info" @click="getSongs()" >Get All Songs</button>
           </div>
         </div>
         <br>
         <div class="row">
           <div class="col">
-              <input v-model="id" type="text" v-model="title" />
+              <input v-model="id" type="text" />
               <button @click="getSingleSong(id)" class="btn btn-success">Find Song By Id</button>
           </div>
         </div>
@@ -61,22 +62,23 @@
               </th>
               <th>
               </th>
+              <th></th>
             </tr>
             <tr v-for="item in displayItems">
               <td>
-                <button @click="selectSong(item._id)"> Select Song </td>
+                <button  class="btn" @click="selectSong(item._id)"> Select Song </td>
               </td>
               <td>{{item._id}}</td>
               <td>{{item.title}}</td>
               <td>{{item.genre}}</td>
               <td>
-                <button @click="getReviewsForSong(item._id)">See Reviews</button>
+                <button class="btn" @click="getReviewsForSong(item._id)">See Reviews</button>
               </td>
               <td>
-                <button @click="addReview(item._id)"> Add Review </td>
+                <button class="btn" @click="addReview(item._id)"> Add Review </td>
               </td>
               <td>
-                <button @click="deleteSong(item._id)"> Delete Song </td>
+                <button class="btn btn-danger" @click="deleteSong(item._id)"> Delete Song </td>
               </td>
             </tr>
           </table>
